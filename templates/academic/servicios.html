@@ -1,0 +1,17 @@
+{% extends "academic/base.html" %}
+
+{% block title %}Servicios | Insumos Médicos{% endblock %}
+
+{% block content %}
+<section class="info-page">
+    <div class="info-hero">
+        <p class="eyebrow">SERVICIOS DE ABASTECIMIENTO</p>
+        <h1>Gestiona tus insumos de forma <span>segura.</span></h1>
+        <p class="lead">Consulta lotes disponibles, registra solicitudes y da seguimiento a su despacho.</p>
+    </div>
+    <div class="info-grid">
+        <article class="info-card"><p class="eyebrow">CATÁLOGO</p><h2>Insumos médicos</h2><p class="muted">Consulta categorías, principios activos, lotes, vencimientos y stock.</p><a class="button button-dark" href="{% url 'inicio' %}">Ver catálogo</a></article>
+        <article class="info-card"><p class="eyebrow">SOLICITUDES</p><h2>Carro persistente</h2><p class="muted">Reúne cantidades por caja y revisa el historial de pedidos de tu institución.</p><a class="button button-primary" href="{% url 'carrito' %}">Abrir carro</a></article>
+    </div>
+</section>
+{% endblock %}

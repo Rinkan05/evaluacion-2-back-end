@@ -1,0 +1,35 @@
+{% extends "academic/base.html" %}
+
+{% block title %}Portal de bodega | Insumos Médicos{% endblock %}
+
+{% block content %}
+<section class="staff-header">
+    <div>
+        <p class="eyebrow">OPERACIÓN DE BODEGA</p>
+        <h1>Portal del <span>gestor</span></h1>
+        <p class="muted">Bienvenido, {{ user.username }}. Administra categorías, insumos y despachos.</p>
+    </div>
+    <div class="staff-status"><span></span> Sesión protegida</div>
+</section>
+
+<section class="staff-grid">
+    <a class="staff-card staff-card-main" href="{% url 'gestion-interna' %}">
+        <p class="eyebrow">INVENTARIO Y PEDIDOS</p>
+        <h2>Gestión de bodega</h2>
+        <p>Administra categorías, lotes, stock y solicitudes desde la consola interna.</p>
+        <strong>Abrir gestión <span aria-hidden="true">→</span></strong>
+    </a>
+    <a class="staff-card" href="{% url 'admin:index' %}">
+        <p class="eyebrow">SISTEMA</p>
+        <h2>Administración</h2>
+        <p>Accede a la consola Django con tu cuenta de gestor.</p>
+        <strong>Abrir consola <span aria-hidden="true">→</span></strong>
+    </a>
+    <a class="staff-card" href="{% url 'api-root' %}">
+        <p class="eyebrow">INTEGRACIÓN</p>
+        <h2>API REST</h2>
+        <p>Consulta las rutas de categorías, insumos, solicitudes y despacho.</p>
+        <strong>Abrir API <span aria-hidden="true">→</span></strong>
+    </a>
+</section>
+{% endblock %}

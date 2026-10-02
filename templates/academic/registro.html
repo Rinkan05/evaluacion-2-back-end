@@ -1,0 +1,29 @@
+{% extends "academic/base.html" %}
+
+{% block title %}Crear cuenta | Insumos Médicos{% endblock %}
+
+{% block content %}
+<section class="auth-shell">
+    <div class="auth-panel">
+        <p class="eyebrow">INSTITUCIÓN MÉDICA</p>
+        <h1>Crear cuenta de <span>institución</span></h1>
+        <p class="muted">Registra tu cuenta para consultar insumos y enviar solicitudes de abastecimiento.</p>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}<small class="form-error">{{ error }}</small>{% endfor %}
+                {% if field.help_text %}<small class="help-text">{{ field.help_text|safe }}</small>{% endif %}
+            {% endfor %}
+            <button class="button button-primary" type="submit">Crear cuenta</button>
+        </form>
+    </div>
+    <aside class="auth-aside">
+        <p class="eyebrow">ABASTECIMIENTO B2B</p>
+        <h2>Gestiona tus solicitudes.</h2>
+        <p>Consulta stock por lote y revisa el estado de cada despacho.</p>
+    </aside>
+</section>
+{% endblock %}

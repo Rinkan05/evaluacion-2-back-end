@@ -1,0 +1,18 @@
+{% extends "academic/base.html" %}
+
+{% block title %}Gestión de bodega | Insumos Médicos{% endblock %}
+
+{% block content %}
+<section class="staff-header">
+    <div>
+        <p class="eyebrow">OPERACIÓN DE BODEGA</p>
+        <h1>Gestión de <span>insumos</span></h1>
+        <p class="muted">Usa la API autenticada para administrar categorías, lotes, inventario y despachos.</p>
+        <a class="button button-primary" href="{% url 'api-root' %}">Abrir API de bodega</a>
+        {% if user.is_staff %}
+            <a class="button button-dark" href="{% url 'admin:index' %}">Administración Django</a>
+        {% endif %}
+        <p class="mt-3">Para cambiar el estado de una solicitud, usa <code>PATCH /api/solicitudes/{id}/estado/</code> con <code>{"status":"ENTREGADO"}</code> o <code>{"status":"CANCELADO"}</code>.</p>
+    </div>
+</section>
+{% endblock %}

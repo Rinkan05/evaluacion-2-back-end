@@ -1,0 +1,43 @@
+{% extends "academic/base.html" %}
+
+{% block title %}Insumos Médicos | Abastecimiento B2B{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <p class="eyebrow">ABASTECIMIENTO PARA INSTITUCIONES DE SALUD</p>
+    <h1>Insumos confiables para una <span>atención segura.</span></h1>
+    <p class="lead muted">Consulta disponibilidad por lote y arma solicitudes de abastecimiento para tu institución.</p>
+</section>
+
+<section class="showcase">
+    <div class="showcase-heading">
+        <div>
+            <p class="eyebrow">CATÁLOGO</p>
+            <h2>Insumos disponibles</h2>
+        </div>
+        <span class="muted">{{ supplies|length }} disponibles</span>
+    </div>
+    <div class="game-grid">
+        {% for supply in supplies %}
+            <article class="game-card">
+                <div class="game-art"><h3>{{ supply.commercial_name }}</h3></div>
+                <div class="game-meta">
+                    <span>{{ supply.category.name }}</span>
+                    <span class="game-price">${{ supply.price_per_box }} / caja</span>
+                </div>
+                <p class="muted">Principio activo: {{ supply.active_ingredient }}</p>
+                <p class="muted">Lote {{ supply.lot_number }} · vence {{ supply.expiration_date }} · stock: {{ supply.stock_boxes }} cajas</p>
+                <form method="post" action="{% url 'agregar-carrito' supply.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="inicio">
+                    <label for="quantity-{{ supply.id }}">Cajas solicitadas</label>
+                    <input id="quantity-{{ supply.id }}" name="quantity" type="number" min="1" value="1" required>
+                    <button class="button button-dark" type="submit">Agregar al carro</button>
+                </form>
+            </article>
+        {% empty %}
+            <p class="muted">No hay insumos disponibles en este momento.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

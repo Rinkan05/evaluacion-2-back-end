@@ -1,0 +1,25 @@
+{% extends "academic/base.html" %}
+
+{% block title %}Contacto | Insumos Médicos{% endblock %}
+
+{% block content %}
+<section class="info-page contact-layout">
+    <div>
+        <p class="eyebrow">HABLEMOS</p>
+        <h1 class="info-title">¿Tienes una <span>pregunta?</span></h1>
+        <p class="muted">Escríbenos y el equipo de abastecimiento se pondrá en contacto contigo.</p>
+    </div>
+    <div class="auth-panel">
+        <form method="post" class="contact-form">
+            {% csrf_token %}
+            <label for="name">Nombre</label>
+            <input id="name" name="name" type="text" required>
+            <label for="email">Correo electrónico</label>
+            <input id="email" name="email" type="email" required>
+            <label for="message">Mensaje</label>
+            <textarea id="message" name="message" required></textarea>
+            <button class="button button-accent" type="submit">Enviar mensaje</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

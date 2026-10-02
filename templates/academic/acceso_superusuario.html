@@ -1,0 +1,25 @@
+{% extends "academic/base.html" %}
+
+{% block title %}Iniciar sesión | Insumos Médicos{% endblock %}
+
+{% block content %}
+<section class="auth-shell admin-auth">
+    <div class="auth-panel">
+        <p class="eyebrow">ACCESO INSUMOS MÉDICOS</p>
+        <h1>Inicia <span>sesión</span></h1>
+        <p class="muted">Usa tus credenciales. Si eres personal, entrarás automáticamente al portal de gestión.</p>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next_url|default:'' }}">
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}<small class="form-error">{{ error }}</small>{% endfor %}
+            {% endfor %}
+            <button class="button button-accent" type="submit">Iniciar sesión</button>
+        </form>
+        <p class="muted mt-3 mb-0">¿Todavía no tienes una cuenta? <a href="{% url 'registro' %}">Registrarse</a></p>
+    </div>
+</section>
+{% endblock %}

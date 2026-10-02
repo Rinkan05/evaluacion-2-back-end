@@ -1,0 +1,53 @@
+{% extends "academic/base.html" %}
+
+{% block title %}Carro de insumos | Abastecimiento B2B{% endblock %}
+
+{% block content %}
+<section class="staff-header">
+    <div>
+        <p class="eyebrow">SOLICITUD DE ABASTECIMIENTO</p>
+        <h1>Carro de <span>insumos</span></h1>
+        <p class="muted">Revisa los lotes y las cantidades antes de confirmar el pedido.</p>
+    </div>
+</section>
+
+{% if items %}
+<div class="cart-layout">
+    <section class="cart-list">
+        <form method="post" action="{% url 'actualizar-carrito' %}">
+            {% csrf_token %}
+            {% for item in items %}
+                <div class="cart-row">
+                    <div>
+                        <h3>{{ item.supply.commercial_name }}</h3>
+                        <small>{{ item.supply.category.name }} · lote {{ item.supply.lot_number }} · ${{ item.supply.price_per_box }} por caja</small>
+                        <small>Principio activo: {{ item.supply.active_ingredient }} · vence {{ item.supply.expiration_date }}</small>
+                    </div>
+                    <input class="quantity-input" type="number" name="quantity_{{ item.id }}" min="0" value="{{ item.quantity }}" aria-label="Cajas de {{ item.supply.commercial_name }}">
+                    <div>
+                        <strong>${{ item.subtotal }}</strong>
+                        <button class="btn btn-sm btn-link text-danger" type="submit" formaction="{% url 'eliminar-carrito' item.supply.id %}" formmethod="post">Quitar</button>
+                    </div>
+                </div>
+            {% endfor %}
+            <button class="button button-dark mt-4" type="submit">Actualizar carro</button>
+        </form>
+    </section>
+    <aside class="cart-summary">
+        <p class="eyebrow">RESUMEN</p>
+        <div class="cart-total"><span>Total</span><strong>${{ total }}</strong></div>
+        <form method="post" action="{% url 'finalizar-compra' %}">
+            {% csrf_token %}
+            <button class="button button-primary w-100" type="submit">Confirmar solicitud y pago</button>
+        </form>
+    </aside>
+</div>
+{% else %}
+<section class="auth-panel">
+    <p class="eyebrow">SIN INSUMOS</p>
+    <h2>Tu carro está vacío.</h2>
+    <p class="muted">Explora el catálogo y agrega las cajas que necesita tu institución.</p>
+    <a class="button button-primary" href="{% url 'inicio' %}">Ver catálogo</a>
+</section>
+{% endif %}
+{% endblock %}

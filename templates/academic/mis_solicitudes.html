@@ -1,0 +1,35 @@
+{% extends "academic/base.html" %}
+
+{% block title %}Mis solicitudes | Insumos Médicos{% endblock %}
+
+{% block content %}
+<section class="staff-header">
+    <div>
+        <p class="eyebrow">INSTITUCIÓN MÉDICA</p>
+        <h1>Mis <span>solicitudes</span></h1>
+        <p class="muted">Consulta los pedidos y su estado de despacho.</p>
+    </div>
+</section>
+
+{% for order in orders %}
+    <section class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h2 class="h4">Solicitud #{{ order.id }} · {{ order.get_status_display }}</h2>
+            <p>Fecha: {{ order.created_at }} · Total: ${{ order.total }}</p>
+            {% if order.dispatch %}
+                <p>Despacho: {{ order.dispatch.get_status_display }}</p>
+            {% endif %}
+            <ul>
+                {% for item in order.items.all %}
+                    <li>{{ item.commercial_name }} · lote {{ item.lot_number }} · {{ item.quantity_boxes }} cajas · ${{ item.subtotal }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+{% empty %}
+    <section class="auth-panel">
+        <h2>Aún no tienes solicitudes.</h2>
+        <a class="button button-primary" href="{% url 'inicio' %}">Ver catálogo</a>
+    </section>
+{% endfor %}
+{% endblock %}
