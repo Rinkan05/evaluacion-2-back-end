@@ -1,0 +1,142 @@
+{% extends "academic/base.html" %}
+
+{% block title %}Gestión de usuarios | Insumos Médicos{% endblock %}
+
+{% block content %}
+{# La vista limita toda esta interfaz al superusuario maestro. #}
+<section class="staff-header">
+    <div>
+        <p class="eyebrow">ADMINISTRACIÓN MAESTRA</p>
+        <h1>Gestión de <span>usuarios</span></h1>
+        <p class="muted">Selecciona una cuenta para consultar o editarla.</p>
+    </div>
+</section>
+
+{# La lista a la izquierda selecciona qué formulario CRUD se muestra a la derecha. #}
+<section class="user-management-layout">
+    <aside class="user-management-sidebar" aria-label="Cuentas registradas">
+        <div class="user-panel-heading">
+            <h2>Usuarios</h2>
+            <span>{{ users|length }}</span>
+        </div>
+        <a
+            class="user-select-link user-create-link{% if not selected_user %} is-selected{% endif %}"
+            href="{% url 'gestionar-usuarios' %}"
+        >
+            <span class="user-avatar" aria-hidden="true">+</span>
+            <span><strong>Crear usuario</strong><small>Nueva institución o gestor</small></span>
+        </a>
+        <nav class="user-select-list">
+            {% for managed_user in users %}
+                {% if managed_user.is_superuser %}
+                    <div class="user-select-link is-protected" aria-disabled="true">
+                        <span class="user-avatar" aria-hidden="true">{{ managed_user.username|first|upper }}</span>
+                        <span>
+                            <strong>{{ managed_user.username }}</strong>
+                            <small>Superusuario maestro · Protegido</small>
+                        </span>
+                    </div>
+                {% else %}
+                    <a
+                        class="user-select-link{% if selected_user.pk == managed_user.pk %} is-selected{% endif %}"
+                        href="{% url 'gestionar-usuarios' %}?usuario={{ managed_user.pk }}"
+                        aria-current="{% if selected_user.pk == managed_user.pk %}page{% endif %}"
+                    >
+                        <span class="user-avatar" aria-hidden="true">{{ managed_user.username|first|upper }}</span>
+                        <span>
+                            <strong>{{ managed_user.username }}</strong>
+                            <small>{{ managed_user.get_rol_display }} · {% if managed_user.is_active %}Activa{% else %}Desactivada{% endif %}</small>
+                        </span>
+                        <span class="user-select-arrow" aria-hidden="true">›</span>
+                    </a>
+                {% endif %}
+            {% empty %}
+                <p class="user-empty">No hay cuentas registradas todavía.</p>
+            {% endfor %}
+        </nav>
+    </aside>
+
+    {# La selección activa determina si se crea una cuenta o se edita la elegida. #}
+    <section class="user-management-editor" aria-live="polite">
+        {% if selected_user and update_form %}
+            <div class="user-editor-heading">
+                <div>
+                    <p class="eyebrow">EDITAR CUENTA</p>
+                    <h2>{{ selected_user.username }}</h2>
+                </div>
+                <span class="user-state-pill{% if not selected_user.is_active %} is-inactive{% endif %}">
+                    {% if selected_user.is_active %}Activa{% else %}Desactivada{% endif %}
+                </span>
+            </div>
+            <p class="user-editor-copy">Actualiza el rol funcional o el estado de acceso de esta cuenta.</p>
+            <form method="post" class="user-editor-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="user_id" value="{{ selected_user.pk }}">
+                {{ update_form.non_field_errors }}
+                {% for field in update_form %}
+                    {% if field.name == 'is_active' %}
+                        <label class="user-active-control">
+                            {{ field }}
+                            <span>
+                                <strong>{{ field.label }}</strong>
+                                <small>Permite que la cuenta inicie sesión.</small>
+                            </span>
+                        </label>
+                    {% else %}
+                        <div class="user-form-field">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    {% endif %}
+                    {% for error in field.errors %}<small class="form-error">{{ error }}</small>{% endfor %}
+                {% endfor %}
+                <div class="user-editor-actions">
+                    <button class="button button-primary" type="submit">Guardar cambios</button>
+                </div>
+            </form>
+            <form method="post" class="user-editor-secondary-action">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="toggle-active">
+                <input type="hidden" name="user_id" value="{{ selected_user.pk }}">
+                {% if selected_user.is_active %}
+                    <button class="button button-danger" type="submit">Desactivar cuenta</button>
+                {% else %}
+                    <button class="button button-dark" type="submit">Reactivar cuenta</button>
+                {% endif %}
+            </form>
+        {% elif selected_user %}
+            <div class="user-editor-empty">
+                <span class="user-avatar user-avatar-large" aria-hidden="true">{{ selected_user.username|first|upper }}</span>
+                <p class="eyebrow">CUENTA PROTEGIDA</p>
+                <h2>{{ selected_user.username }}</h2>
+                <p>Las cuentas de superusuario no se pueden editar ni desactivar desde este panel.</p>
+            </div>
+        {% else %}
+            <div class="user-editor-heading">
+                <div>
+                    <p class="eyebrow">NUEVA CUENTA</p>
+                    <h2>Crear usuario</h2>
+                </div>
+            </div>
+            <p class="user-editor-copy">Crea una cuenta y asigna el rol de cliente o gestor de bodega.</p>
+            <form method="post" class="user-editor-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                {{ create_form.non_field_errors }}
+                {% for field in create_form %}
+                    <div class="user-form-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}<small class="form-error">{{ error }}</small>{% endfor %}
+                        {% if field.help_text %}<small class="help-text">{{ field.help_text|safe }}</small>{% endif %}
+                    </div>
+                {% endfor %}
+                <div class="user-editor-actions">
+                    <button class="button button-primary" type="submit">Crear usuario</button>
+                </div>
+            </form>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

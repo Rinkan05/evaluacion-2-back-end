@@ -10,30 +10,32 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+"""Configuración global: aplicaciones, seguridad, PostgreSQL, idioma y API."""
+
 from pathlib import Path
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Ruta absoluta del proyecto; sirve para ubicar plantillas y recursos estáticos.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# Las variables de entorno pueden reemplazar los valores locales por defecto;
+# para desplegar, configura claves y credenciales propias fuera del repositorio.
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY',
     'django-insecure-local-development-only-change-before-deploy',
 )
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG y ALLOWED_HOSTS son ajustes de despliegue que deben revisarse en producción.
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'testserver']
 
 
-# Application definition
-
+# Aplicaciones de Django, la API REST, filtros y documentación OpenAPI.
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     'insumos_medicos.apps.AcademicConfig',
 ]
 
+# Capas HTTP que gestionan seguridad, sesión, CSRF, autenticación y mensajes.
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -59,6 +62,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'farmacia_projecto.urls'
 
+# Motor de plantillas HTML y datos compartidos con todas las páginas.
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -79,24 +83,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'farmacia_projecto.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-
+# PostgreSQL es el motor activo del proyecto. Las variables de entorno permiten
+# configurar servidor y credenciales por entorno sin cambiar el código fuente.
+# Los valores predeterminados son solo para desarrollo local.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'evaluacion_db'),
+        'NAME': os.environ.get('DB_NAME', 'bd_farmacia'),
         'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'Inacap.2030'),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
-
+# Validadores aplicados por Django a contraseñas definidas mediante formularios.
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -113,9 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.1/topics/i18n/
-
+# Idioma, zona horaria y soporte de traducción/fechas locales.
 LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'America/Santiago'
@@ -125,19 +125,19 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.1/howto/static-files/
-
+# Ubicación del CSS y otros recursos estáticos propios.
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 
+# Configuración base de DRF: valida Bearer JWT, exige sesión autenticada salvo
+# que una vista declare explícitamente AllowAny y habilita filtros y OpenAPI.
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        # Solo los superusuarios pueden acceder a la API.
+        # Las vistas pueden permitir acceso público o restringirlo por rol.
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_FILTER_BACKENDS': [
@@ -146,6 +146,7 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+# Título y metadatos expuestos por la documentación Swagger/OpenAPI.
 SPECTACULAR_SETTINGS = {
     'TITLE': 'API de Abastecimiento de Insumos Médicos',
     'DESCRIPTION': (
@@ -156,13 +157,13 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-STUDENT_NAME = 'Maxi solis'
-COURSE_SECTION = 'Sección 1'
+# El procesador student_footer los comparte con las plantillas; el año se
+# renderiza dinámicamente desde la plantilla base.
+STUDENT_NAME = 'Maximiliano Solis'
+COURSE_SECTION = 'AP-N4-C1'
 
 
-# Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
-
+# Durante desarrollo, el correo se imprime en consola en lugar de enviarse.
 MAILERS = {
     'default': {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',

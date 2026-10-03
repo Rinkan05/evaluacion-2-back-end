@@ -3,6 +3,7 @@
 {% block title %}Carro de insumos | Abastecimiento B2B{% endblock %}
 
 {% block content %}
+{# Resumen persistente de líneas, cantidades, subtotales y confirmación de compra. #}
 <section class="staff-header">
     <div>
         <p class="eyebrow">SOLICITUD DE ABASTECIMIENTO</p>
@@ -12,6 +13,7 @@
 </section>
 
 {% if items %}
+{# Al actualizar una cantidad a cero se elimina su línea; pagar ejecuta el checkout. #}
 <div class="cart-layout">
     <section class="cart-list">
         <form method="post" action="{% url 'actualizar-carrito' %}">
@@ -43,6 +45,7 @@
     </aside>
 </div>
 {% else %}
+{# Estado vacío con un enlace de regreso al catálogo público. #}
 <section class="auth-panel">
     <p class="eyebrow">SIN INSUMOS</p>
     <h2>Tu carro está vacío.</h2>

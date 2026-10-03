@@ -1,4 +1,8 @@
+"""Datos comunes inyectados en todas las plantillas HTML."""
+
+
 def cart_context(request):
+    """Comparte con la navegación el total de cajas del carro persistido."""
     if not request.user.is_authenticated:
         return {'cart_count': 0}
     cart = getattr(request.user, 'cart', None)
@@ -12,7 +16,7 @@ def cart_context(request):
 
 
 def student_footer(request):
-    """Provides required student attribution to every project HTML template."""
+    """Lee nombre y sección de settings para que base.html los muestre."""
     from django.conf import settings
 
     return {

@@ -7,6 +7,8 @@ For more information on this file, see
 https://docs.djangoproject.com/en/6.1/howto/deployment/asgi/
 """
 
+"""Punto de entrada ASGI para servidores compatibles con Django."""
+
 import os
 
 from django.core.asgi import get_asgi_application

@@ -1,3 +1,5 @@
+"""Rutas REST para catálogo, carro, solicitudes, usuarios y despacho."""
+
 from django.urls import path
 
 from .api_views import (
@@ -14,6 +16,11 @@ from .api_views import (
 )
 
 
+# Rutas y operaciones disponibles (la autorización se define en cada vista):
+# - catálogo y categorías para consulta pública y mantenimiento por bodega;
+# - carro y checkout para instituciones autenticadas;
+# - consulta de solicitudes del cliente y cambio de estado por el gestor.
+# Los nombres permiten construir URLs y pruebas con reverse() de Django.
 urlpatterns = [
     path('', ApiRootView.as_view(), name='api-root'),
     path('categorias/', CategoryListCreateView.as_view(), name='category-list'),
@@ -40,5 +47,10 @@ urlpatterns = [
         'solicitudes/<int:pk>/estado/',
         OrderStatusView.as_view(),
         name='order-status',
+    ),
+    path(
+        'solicitudes/uuid/<uuid:uuid>/estado/',
+        OrderStatusView.as_view(),
+        name='order-status-by-uuid',
     ),
 ]

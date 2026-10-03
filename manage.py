@@ -5,7 +5,7 @@ import sys
 
 
 def main():
-    """Run administrative tasks."""
+    """Prepara Django y pasa los argumentos a su herramienta de comandos."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'farmacia_projecto.settings')
     try:
         from django.core.management import execute_from_command_line

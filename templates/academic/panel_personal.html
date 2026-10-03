@@ -3,6 +3,7 @@
 {% block title %}Portal de bodega | Insumos Médicos{% endblock %}
 
 {% block content %}
+{# Accesos operativos disponibles solo para las cuentas de gestor de bodega. #}
 <section class="staff-header">
     <div>
         <p class="eyebrow">OPERACIÓN DE BODEGA</p>
@@ -19,12 +20,14 @@
         <p>Administra categorías, lotes, stock y solicitudes desde la consola interna.</p>
         <strong>Abrir gestión <span aria-hidden="true">→</span></strong>
     </a>
-    <a class="staff-card" href="{% url 'admin:index' %}">
-        <p class="eyebrow">SISTEMA</p>
-        <h2>Administración</h2>
-        <p>Accede a la consola Django con tu cuenta de gestor.</p>
-        <strong>Abrir consola <span aria-hidden="true">→</span></strong>
-    </a>
+    {% if user.is_superuser %}
+        <a class="staff-card" href="{% url 'gestionar-usuarios' %}">
+            <p class="eyebrow">CUENTAS Y PERMISOS</p>
+            <h2>Administración de usuarios</h2>
+            <p>Crea cuentas de clientes o gestores y asigna su rol de trabajo.</p>
+            <strong>Gestionar usuarios <span aria-hidden="true">→</span></strong>
+        </a>
+    {% endif %}
     <a class="staff-card" href="{% url 'api-root' %}">
         <p class="eyebrow">INTEGRACIÓN</p>
         <h2>API REST</h2>

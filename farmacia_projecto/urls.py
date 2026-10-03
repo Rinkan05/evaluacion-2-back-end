@@ -1,3 +1,5 @@
+"""Rutas principales: API, autenticación JWT, documentación y páginas HTML."""
+
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import (
@@ -13,9 +15,13 @@ from insumos_medicos.tokens import RoleTokenObtainPairSerializer
 
 
 class TokenObtainPairView(BaseTokenObtainPairView):
+    """Usa el serializador que añade rol y username a los JWT emitidos."""
+
     serializer_class = RoleTokenObtainPairSerializer
 
 
+# La API y sus tokens viven bajo /api/; schema y Swagger son públicos para
+# documentación. Las rutas restantes sirven las páginas HTML del sistema.
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('insumos_medicos.api_urls')),
@@ -42,6 +48,11 @@ urlpatterns = [
     path('iniciar-sesion/', views.iniciar_sesion, name='iniciar-sesion'),
     path('acceso-superusuario/', views.iniciar_sesion, name='acceso-superusuario'),
     path('personal/', views.panel_personal, name='panel-personal'),
+    path(
+        'personal/usuarios/',
+        views.gestionar_usuarios,
+        name='gestionar-usuarios',
+    ),
     path('cerrar-sesion/', views.cerrar_sesion, name='cerrar-sesion'),
     path('gestion-interna/', views.gestionar_interno, name='gestion-interna'),
     path('carrito/', views.carrito, name='carrito'),

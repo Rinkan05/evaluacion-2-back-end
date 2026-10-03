@@ -6,13 +6,149 @@
 <section class="staff-header">
     <div>
         <p class="eyebrow">OPERACIÓN DE BODEGA</p>
-        <h1>Gestión de <span>insumos</span></h1>
-        <p class="muted">Usa la API autenticada para administrar categorías, lotes, inventario y despachos.</p>
-        <a class="button button-primary" href="{% url 'api-root' %}">Abrir API de bodega</a>
-        {% if user.is_staff %}
-            <a class="button button-dark" href="{% url 'admin:index' %}">Administración Django</a>
-        {% endif %}
-        <p class="mt-3">Para cambiar el estado de una solicitud, usa <code>PATCH /api/solicitudes/{id}/estado/</code> con <code>{"status":"ENTREGADO"}</code> o <code>{"status":"CANCELADO"}</code>.</p>
+        <h1>Gestión de <span>bodega</span></h1>
+        <p class="muted">Administra lotes y procesa despachos. Las cancelaciones reponen las cajas en inventario.</p>
     </div>
+    <div class="staff-status"><span></span> Sesión protegida</div>
+</section>
+
+<section class="py-4" aria-labelledby="new-supply-heading">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+        <div>
+            <p class="eyebrow mb-1">INVENTARIO</p>
+            <h2 id="new-supply-heading" class="h3 mb-0">Agregar insumo</h2>
+        </div>
+        <a class="button button-dark" href="{% url 'api-root' %}">Documentación API</a>
+    </div>
+    <form method="post" class="card card-body">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create-supply">
+        <div class="row g-3">
+            {% for field in create_form %}
+                <div class="col-md-6 col-xl-4">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        {% for error in create_form.non_field_errors %}<div class="form-error mt-3">{{ error }}</div>{% endfor %}
+        <div class="mt-3">
+            <button class="button button-primary" type="submit">Agregar al inventario</button>
+        </div>
+    </form>
+</section>
+
+<section class="py-4" aria-labelledby="inventory-heading">
+    <div class="mb-3">
+        <p class="eyebrow mb-1">LOTES REGISTRADOS</p>
+        <h2 id="inventory-heading" class="h3 mb-0">Inventario</h2>
+    </div>
+    {% if supplies %}
+        <div class="table-responsive card">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Insumo / lote</th>
+                        <th scope="col">Categoría</th>
+                        <th scope="col">Vencimiento</th>
+                        <th scope="col">Precio por caja</th>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Administrar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supply in supplies %}
+                        <tr>
+                            <td>
+                                <strong>{{ supply.commercial_name }}</strong>
+                                <div class="text-muted small">{{ supply.active_ingredient }} · Lote {{ supply.lot_number }}</div>
+                            </td>
+                            <td>{{ supply.category.name }}</td>
+                            <td>{{ supply.expiration_date|date:"d/m/Y" }}</td>
+                            <td>${{ supply.price_per_box }}</td>
+                            <td>{{ supply.stock_boxes }} cajas</td>
+                            <td>
+                                <details>
+                                    <summary class="button button-dark">Editar</summary>
+                                    <form method="post" class="card card-body mt-2 inventory-edit-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="update-supply">
+                                        <input type="hidden" name="supply_id" value="{{ supply.pk }}">
+                                        {% for field in supply.edit_form %}
+                                            <div class="mb-2">
+                                                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                                {{ field }}
+                                                {% for error in field.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                                            </div>
+                                        {% endfor %}
+                                        {% for error in supply.edit_form.non_field_errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                                        <button class="button button-primary" type="submit">Guardar cambios</button>
+                                    </form>
+                                    <form method="post" class="mt-2" onsubmit="return confirm('¿Eliminar este lote del inventario?');">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete-supply">
+                                        <input type="hidden" name="supply_id" value="{{ supply.pk }}">
+                                        <button class="button button-danger" type="submit">Eliminar lote</button>
+                                    </form>
+                                </details>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="card card-body text-muted">Todavía no hay lotes registrados. Agrega el primero con el formulario anterior.</p>
+    {% endif %}
+</section>
+
+<section class="py-4" aria-labelledby="orders-heading">
+    <div class="mb-3">
+        <p class="eyebrow mb-1">PREPARACIÓN Y DESPACHO</p>
+        <h2 id="orders-heading" class="h3 mb-0">Solicitudes de abastecimiento</h2>
+    </div>
+    {% if orders %}
+        <div class="d-grid gap-3">
+            {% for order in orders %}
+                <article class="card card-body">
+                    <div class="d-flex flex-wrap justify-content-between gap-2">
+                        <div>
+                            <h3 class="h5 mb-1">Solicitud #{{ order.pk }} · {{ order.get_status_display }}</h3>
+                            <p class="text-muted mb-0">{{ order.user.username }} · {{ order.created_at|date:"d/m/Y H:i" }}</p>
+                            <p class="text-muted small mb-0">UUID: <code>{{ order.uuid }}</code></p>
+                        </div>
+                        <div class="text-md-end">
+                            <strong>Total: ${{ order.total }}</strong>
+                            {% if order.dispatch %}<div class="text-muted small">Despacho: {{ order.dispatch.get_status_display }}</div>{% endif %}
+                        </div>
+                    </div>
+                    <ul class="mt-3 mb-0">
+                        {% for item in order.items.all %}
+                            <li>{{ item.commercial_name }} · lote {{ item.lot_number }} · {{ item.quantity_boxes }} cajas</li>
+                        {% endfor %}
+                    </ul>
+                    {% if order.status == 'PAGADO' %}
+                        <form method="post" class="row g-2 align-items-end mt-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update-order-status">
+                            {{ order.status_form.order_id.as_hidden }}
+                            <div class="col-sm-7 col-md-5">
+                                <label class="form-label" for="{{ order.status_form.status.id_for_label }}">Actualizar despacho</label>
+                                {{ order.status_form.status }}
+                                {% for error in order.status_form.status.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                                {% for error in order.status_form.order_id.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-sm-auto">
+                                <button class="button button-primary" type="submit">Aplicar estado</button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="card card-body text-muted">Todavía no hay solicitudes registradas.</p>
+    {% endif %}
 </section>
 {% endblock %}

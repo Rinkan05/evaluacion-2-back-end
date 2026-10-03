@@ -7,87 +7,20 @@
     {% load static %}
     <title>{% block title %}Insumos Médicos{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <style>
-        :root { --ink: #17151f; --paper: #f5f1e8; --lime: #c7f000; --pink: #ff477e; --violet: #6c4cff; }
-        body { background: var(--paper); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; }
-        .navbar { background: var(--ink) !important; border-bottom: 4px solid var(--lime); }
-        .navbar-brand { color: #fff !important; letter-spacing: .08em; display: inline-flex; align-items: center; gap: .6rem; font-size: 1rem; }
-        .brand-mark { display: inline-grid; place-items: center; width: 2rem; height: 2rem; background: var(--lime); color: var(--ink); border: 2px solid var(--pink); transform: rotate(-8deg); font: 900 .8rem Arial, sans-serif; letter-spacing: 0; box-shadow: 3px 3px 0 var(--pink); }
-        .brand-name { line-height: 1; }
-        .brand-name strong { color: var(--lime); }
-        .nav-link { color: #fff !important; font-family: Arial, sans-serif; font-size: .84rem; text-transform: uppercase; }
-        .nav-action { padding: .55rem .9rem !important; border: 2px solid var(--lime); text-align: center; }
-        .nav-register { background: var(--lime); color: var(--ink) !important; }
-        .nav-login { border-color: #fff; }
-        .hero { padding: 5rem 0; max-width: 850px; }
-        .hero h1, .auth-panel h1 { font-size: clamp(2.8rem, 7vw, 6.5rem); line-height: .9; font-weight: 900; }
-        .hero h1 span, .auth-panel h1 span { color: var(--pink); }
-        .eyebrow { color: var(--violet); font: 700 .78rem Arial, sans-serif; letter-spacing: .18em; }
-        .muted { color: #625d68; }
-        .button { border: 0; padding: .9rem 1.2rem; font: 700 .85rem Arial, sans-serif; text-transform: uppercase; text-decoration: none; display: inline-block; }
-        .button-primary { background: var(--lime); color: var(--ink); }
-        .button-accent { background: var(--pink); color: #fff; }
-        .button-dark { background: var(--ink); color: #fff; }
-        .showcase { padding: 1rem 0 4rem; }
-        .showcase-heading { display: flex; justify-content: space-between; align-items: end; gap: 1rem; border-bottom: 2px solid var(--ink); padding-bottom: 1rem; }
-        .showcase-heading h2 { font-size: 2.3rem; margin: 0; }
-        .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; margin-top: 1.5rem; }
-        .game-card { border: 2px solid var(--ink); background: #fffdf7; padding: 1.4rem; box-shadow: 6px 6px 0 var(--ink); }
-        .game-art { min-height: 170px; display: flex; align-items: end; padding: 1rem; background: var(--violet); color: #fff; }
-        .game-card:nth-child(2) .game-art { background: var(--pink); }
-        .game-art h3 { font-size: 2rem; line-height: .95; margin: 0; }
-        .game-meta { display: flex; justify-content: space-between; gap: 1rem; margin: 1rem 0; font: .82rem Arial, sans-serif; text-transform: uppercase; }
-        .game-price { font-size: 1.4rem; font-weight: 700; }
-        .cart-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 1.5rem; margin: 3rem 0; }
-        .cart-list, .cart-summary { border: 2px solid var(--ink); background: #fffdf7; padding: 1.5rem; }
-        .cart-summary { align-self: start; background: var(--ink); color: #fff; }
-        .cart-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid #d7d2df; }
-        .cart-row h3 { font-size: 1.2rem; margin: 0; }
-        .cart-row small { color: #625d68; }
-        .quantity-input { width: 4.5rem; padding: .45rem; border: 2px solid var(--ink); }
-        .cart-total { display: flex; justify-content: space-between; font-size: 1.3rem; margin: 1.2rem 0; }
-        .flash-messages { margin-top: 1.5rem; }
-        .floating-cart { position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 1000; display: inline-flex; align-items: center; gap: .7rem; padding: .9rem 1.1rem; border: 2px solid var(--ink); background: var(--lime); color: var(--ink); box-shadow: 5px 5px 0 var(--ink); font: 700 .82rem Arial, sans-serif; text-decoration: none; text-transform: uppercase; transition: transform .15s ease, box-shadow .15s ease; }
-        .floating-cart:hover { color: var(--ink); transform: translate(2px, 2px); box-shadow: 3px 3px 0 var(--ink); }
-        .cart-badge { min-width: 1.45rem; height: 1.45rem; display: inline-grid; place-items: center; border-radius: 50%; background: var(--pink); color: #fff; font-size: .75rem; }
-        .auth-shell { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .7fr); gap: 2rem; max-width: 1000px; margin: 3rem auto; }
-        .auth-panel, .auth-aside { padding: 2.5rem; border: 2px solid var(--ink); box-shadow: 10px 10px 0 var(--ink); background: #fffdf7; }
-        .auth-aside { background: var(--violet); color: white; align-self: end; }
-        .auth-form { display: grid; gap: .55rem; margin-top: 2rem; font-family: Arial, sans-serif; }
-        .auth-form label { font-weight: 700; font-size: .85rem; }
-        .auth-form input { border: 2px solid var(--ink); padding: .75rem; }
-        .auth-form .help-text { color: #625d68; font-size: .75rem; }
-        .form-error, .errorlist { color: #b4234d; font-size: .8rem; }
-        .staff-header { display: flex; justify-content: space-between; align-items: end; gap: 2rem; padding: 3rem 0 2rem; border-bottom: 2px solid var(--ink); }
-        .staff-header h1 { font-size: clamp(2.6rem, 6vw, 5.5rem); line-height: .9; font-weight: 900; margin: 0 0 1rem; }
-        .staff-header h1 span { color: var(--pink); }
-        .staff-status { border: 2px solid var(--ink); background: var(--lime); padding: .7rem 1rem; font: 700 .75rem Arial, sans-serif; text-transform: uppercase; white-space: nowrap; }
-        .staff-status span { display: inline-block; width: .55rem; height: .55rem; border-radius: 50%; background: #16803c; margin-right: .35rem; }
-        .staff-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; padding: 2rem 0; }
-        .staff-card { display: block; min-height: 220px; padding: 1.8rem; border: 2px solid var(--ink); background: #fffdf7; color: var(--ink); text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; }
-        .staff-card:hover { color: var(--ink); transform: translate(-4px, -4px); box-shadow: 7px 7px 0 var(--ink); }
-        .staff-card h2 { font-size: 1.7rem; margin: .5rem 0; }
-        .staff-card p:not(.eyebrow) { color: #625d68; max-width: 38rem; }
-        .staff-card strong { display: block; margin-top: 1.5rem; font: 700 .82rem Arial, sans-serif; text-transform: uppercase; }
-        .staff-card strong span { color: var(--pink); font-size: 1.2rem; }
-        .staff-card-main { background: var(--pink); color: #fff; }
-        .staff-card-main:hover { color: #fff; }
-        .staff-card-main .eyebrow, .staff-card-main p:not(.eyebrow) { color: #fff; }
-        .staff-card-dark { background: var(--ink); color: #fff; }
-        .staff-card-dark .eyebrow { color: var(--lime); }
-        .staff-card-dark p:not(.eyebrow) { color: #d7d2df; }
-        .staff-card-dark code { color: var(--lime); }
-        @media (max-width: 700px) { .staff-header { display: block; } .staff-status { display: inline-block; margin-top: 1rem; } .staff-grid, .game-grid, .cart-layout { grid-template-columns: 1fr; } .cart-row { grid-template-columns: 1fr auto; } }
-        @media (max-width: 700px) { .auth-shell { grid-template-columns: 1fr; } .auth-aside { display: none; } }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}?v=3">
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-light">
+    {# Navegación compartida: muestra accesos distintos según autenticación y rol. #}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/" aria-label="Insumos Médicos, inicio">
-                <span class="brand-mark">IM</span>
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" focusable="false">
+                        <path fill="currentColor" d="M21 2h6v13.5l11.7-6.75 3 5.2L30 20.7h15v6H30l11.7 6.75-3 5.2L27 31.9v13.5h-6V31.9L9.3 38.65l-3-5.2L18 26.7H3v-6h15L6.3 13.95l3-5.2L21 15.5z"/>
+                        <path d="M24 11v26m0-19c-5 0-5 6 0 6s5 6 0 6-5 6 0 6" fill="none" stroke="var(--green)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                    </svg>
+                </span>
                 <span class="brand-name"><strong>INSUMOS</strong> MÉDICOS</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Mostrar navegacion">
@@ -106,6 +39,9 @@
                         {% else %}
                             <a class="nav-link" href="{% url 'panel-personal' %}">Bodega</a>
                         {% endif %}
+                        {% if user.is_superuser %}
+                            <a class="nav-link" href="{% url 'gestionar-usuarios' %}">Usuarios</a>
+                        {% endif %}
                         <a class="nav-link nav-action nav-login" href="/cerrar-sesion/">Cerrar sesión</a>
                     {% else %}
                         <a class="nav-link nav-action nav-register" href="/registro/">Registrarse</a>
@@ -116,6 +52,7 @@
         </div>
     </nav>
 
+    {# Contenido de cada página hija y mensajes del framework. #}
     <main class="container py-4">
         {% if messages %}
             <div class="flash-messages">
@@ -125,16 +62,19 @@
         {% block content %}{% endblock %}
     </main>
 
+    {# Datos de identificación requeridos para el sitio completo. #}
     <footer class="container py-3 border-top text-center text-muted">
         {{ student_name }} · {{ course_section }} · {% now "Y" %}
     </footer>
 
+    {# Acceso rápido al carro solo para clientes institucionales autenticados. #}
     {% if user.is_authenticated and user.rol == 'INSTITUCION_MEDICA' and not user.is_superuser %}
         <a class="floating-cart" href="{% url 'carrito' %}" aria-label="Abrir carrito de compra">
             <span aria-hidden="true">🛒</span> Carro <span class="cart-badge">{{ cart_count }}</span>
         </a>
     {% endif %}
 
+    {# Bootstrap habilita el menú móvil; cada página puede añadir sus propios scripts. #}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block scripts %}{% endblock %}
 </body>
