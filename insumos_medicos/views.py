@@ -1,5 +1,6 @@
 """Vistas HTML para catálogo, carro, autenticación y seguimiento de solicitudes."""
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -82,6 +83,12 @@ def iniciar_sesion(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             login(request, form.get_user())
+            # Plazo de inactividad configurado en settings.py según el rol.
+            request.session.set_expiry(
+                settings.WAREHOUSE_SESSION_AGE
+                if is_warehouse_manager(request.user)
+                else settings.INSTITUTION_SESSION_AGE
+            )
             # El personal va al panel; los clientes vuelven a su página solicitada.
             if is_warehouse_manager(request.user):
                 return redirect('panel-personal')

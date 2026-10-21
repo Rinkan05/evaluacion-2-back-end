@@ -55,6 +55,45 @@ class SupplyApiTests(APITestCase):
         created_user = User.objects.get(username='nueva_clinica')
         self.assertEqual(created_user.rol, User.Role.INSTITUTION)
 
+    def test_web_session_expiry_depends_on_business_role(self):
+        """Las sesiones web vencen por inactividad según el rol autenticado."""
+        for user, expected_age in (
+            (self.manager, 20),
+            (self.institution, 60),
+        ):
+            with self.subTest(role=user.rol):
+                self.client.post(
+                    reverse('iniciar-sesion'),
+                    {'username': user.username, 'password': 'test-password'},
+                )
+
+                expiry_age = self.client.session.get_expiry_age()
+                self.assertGreaterEqual(expiry_age, expected_age - 1)
+                self.assertLessEqual(expiry_age, expected_age)
+                self.client.logout()
+
+    def test_api_documentation_link_is_only_shown_to_master_superuser(self):
+        """La navegación ofrece Swagger únicamente al superusuario maestro."""
+        services_url = reverse('servicios')
+        docs_link = f'href="{reverse("swagger-ui")}"'
+
+        response = self.client.get(services_url)
+        self.assertNotContains(response, docs_link)
+
+        self.client.force_login(self.manager)
+        response = self.client.get(services_url)
+        self.assertNotContains(response, docs_link)
+
+        master = User.objects.create_superuser(
+            username='admin_maestro_docs',
+            email='admin-docs@example.test',
+            password='Master-Password-2026',
+        )
+        self.client.force_login(master)
+        response = self.client.get(services_url)
+        self.assertContains(response, docs_link)
+        self.assertContains(response, 'Documentación API')
+
     def test_master_superuser_can_create_users_with_either_business_role(self):
         """El superusuario maestro crea cuentas y asigna uno de los dos roles."""
         master = User.objects.create_superuser(

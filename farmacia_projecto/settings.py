@@ -114,6 +114,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Expiración por inactividad de las sesiones web, en segundos. La vista de
+# inicio de sesión aplica el plazo según el rol: bodega 20 s e institución 60 s.
+WAREHOUSE_SESSION_AGE = 20
+INSTITUTION_SESSION_AGE = 60
+SESSION_SAVE_EVERY_REQUEST = True
+
 
 # Idioma, zona horaria y soporte de traducción/fechas locales.
 LANGUAGE_CODE = 'es'
